@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 import Tarea from './components/Tarea';
 import FormularioTarea from './components/Formulario';
 
@@ -8,7 +8,7 @@ export default function App() {
   //defiinir el state 
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [tareas, setTareas] = useState([
-    { id: "1", nombre: "Deberes", descripcion: "deber de matematicas", telefono: '0002251', fecha: "01", hora: "11" },
+    { id: "1", nombre: "Deberes", descripcion: "Deber de matematicas", telefono: '0002251', fecha: "5/09/2024", hora: "5:51:00 PM" },
   ]);
 
   const agregarTarea = (nuevaTarea) => {
@@ -36,20 +36,25 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.titulo}>Administrador de tareas</Text> */}
       <Text style={styles.titulo}>{tareas.length > 0 ? 'Lista de Tareas' : 'No hay tareas, agrega una'}</Text>
-      <Button title="Nueva Tarea" onPress={abrirFormulario} style={styles.btnGuardar} />
-      {mostrarFormulario && (
-        <FormularioTarea onAgregarCita={agregarTarea}
-          onClose={cerrarFormulario}
-        />
+      <View style={styles.boton}>
+        <TouchableHighlight title="Nueva Tarea" onPress={abrirFormulario} style={styles.btnGuardar} >
+          <Text style={styles.textoBtn}>NUEVA TAREA</Text>
+        </TouchableHighlight>
+        {mostrarFormulario && (
+          <FormularioTarea onAgregarTarea={agregarTarea}
+            onClose={cerrarFormulario}
+          />
+        )}
 
+      </View>
+      {!mostrarFormulario && (
+        <FlatList
+          data={tareas}
+          renderItem={({ item }) => <Tarea item={item} eliminarTarea={eliminarTarea} />}
+          keyExtractor={tarea => tareas.id}
+        />
       )}
-      <FlatList
-        data={tareas}
-        renderItem={({ item }) => <Tarea item={item} eliminarTarea={eliminarTarea} />}
-        keyExtractor={tarea => tareas.id}
-      />
     </View>
   );
 }
@@ -74,13 +79,23 @@ const styles = StyleSheet.create({
 
   btnGuardar: {
     alignItems: 'center',
-    backgroundColor: 'grey',
+    backgroundColor: '#f5eab7',
     padding: 10,
-    width: "30%",
     borderRadius: 10,
-    marginTop: 5,
-    borderWidth:1,
-    borderColor:"#ffff",
+    margin: 5,
+    borderWidth: 1,
+    borderColor: "#ffff",
+  },
+
+  botonesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+
+  textoBtn: {
+    color: ' #050404',
+    fontWeight: 'bold',
+    textAlign: 'center'
   },
 
 });

@@ -1,50 +1,71 @@
-import { View, Text, StyleSheet, Button, TouchableHighlight } from 'react-native'
+import { useState } from 'react';
+import { View, Text, StyleSheet, TouchableHighlight } from 'react-native'
 import React from 'react'
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 export default function Tarea(props) {
+    const [hecho, setHecho] = useState(false);
 
     const procesoEliminar = (id) => {
 
         props.eliminarTarea(id);
- 
-    }
-
-    const modificarTarea = () => {
-        console.log('Modificando Tarea....');
 
     }
+    const toggleHecho = () => {
+        setHecho(!hecho);
+    }
 
+    // const modificarTarea = () => {
+    //     console.log('Modificando Tarea....');
+
+    // }
 
     return (
-        <View style={styles.tarea}>
-            <View>
-                <Text style={styles.label}>Tarea: </Text>
-                <Text style={styles.texto}>{props.item.nombre}</Text>
+        <View style={[styles.tarea, hecho ? styles.tareaHecho : null]}>
+            <TouchableHighlight onPress={toggleHecho}>
+                <View style={styles.checkboxContainer}>
+                    {hecho ? (
+                        <Icon name="check-circle" size={30} color="green" />
+                    ) : (
+                        <Icon name="radio-button-unchecked" size={30} color="gray" />
+                    )}
+                    <Text style={styles.textoHecho}>{hecho ? 'Hecho' : 'Pendiente'}</Text>
+                </View>
+            </TouchableHighlight>
+            <View style={styles.row} >
+                <View>
+                    <Text style={styles.label}>Tarea: </Text>
+                    <Text style={styles.texto}>{props.item.nombre}</Text>
+                </View>
+                <View>
+                    <Text style={styles.label}>Fecha limite: </Text>
+                    <Text style={styles.texto}>{props.item.fecha}</Text>
+                </View>
+                <View>
+                    <Text style={styles.label}>Hora maxima: </Text>
+                    <Text style={styles.texto}>{props.item.hora}</Text>
+                </View>
             </View>
             <View>
                 <Text style={styles.label}>Descripcion: </Text>
                 <Text style={styles.texto}>{props.item.descripcion}</Text>
             </View>
-            <View>
-                <Text style={styles.label}>Telefono: </Text>
-                <Text style={styles.texto}>{props.item.telefono}</Text>
-            </View>
-            <View>
-                <Text style={styles.label}>Fecha: </Text>
-                <Text style={styles.texto}>{props.item.fecha}</Text>
-            </View>
-            <View>
-                <Text style={styles.label}>Hora: </Text>
-                <Text style={styles.texto}>{props.item.hora}</Text>
+            <View style={styles.row} >
+                <View>
+                    <Text style={styles.label}>Telefono: </Text>
+                    <Text style={styles.texto}>{props.item.telefono}</Text>
+                </View>
+
             </View>
             <View style={styles.botonesContainer}>
                 <TouchableHighlight onPress={() => procesoEliminar(props.item.id)} style={styles.buttonEliminar}>
                     <Text style={styles.textoEliminar}>Eliminar</Text>
                 </TouchableHighlight>
 
-                <TouchableHighlight onPress={modificarTarea} style={styles.btnModificar}>
+                {/* <TouchableHighlight onPress={modificarTarea} style={styles.btnModificar}>
                     <Text style={styles.textoModificar}>Modificar</Text>
-                </TouchableHighlight>
+                </TouchableHighlight> */}
             </View>
         </View>
     )
@@ -52,20 +73,22 @@ export default function Tarea(props) {
 
 const styles = StyleSheet.create({
     tarea: {
-        backgroundColor: '#fff',
-        marginBottom: 10,
-        borderStyle: 'solid',
-        borderBottomWidth: 1,
+        backgroundColor: '#f5eab7',
+        margin: 10,
+        borderWidth: 1,
+        borderColor: '#927a07',
+        borderRadius: 10,
         paddingHorizontal: 10,
-        paddingVertical: 20
+        paddingVertical: 20,
     },
+
     label: {
         fontWeight: 'bold',
-        fontSize: 18,
-        marginTop: 20
+        fontSize: 14,
+        marginTop: 10
     },
     texto: {
-        fontSize: 18,
+        fontSize: 16,
     },
     btnEliminar: {
         padding: 10,
@@ -89,30 +112,42 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
 
-    buttonEliminar:{
+    buttonEliminar: {
         alignItems: 'center',
         backgroundColor: 'red',
         padding: 10,
         width: "30%",
         borderRadius: 10,
         marginTop: 10,
-        borderWidth:1,
-        borderColor:"#ffff",
-      },
+        borderWidth: 1,
+        borderColor: "#ffff",
+    },
 
-      btnModificar: {
+    btnModificar: {
         alignItems: 'center',
         backgroundColor: 'green',
         padding: 10,
         width: "30%",
         borderRadius: 10,
         marginTop: 10,
-        borderWidth:1,
-        borderColor:"#ffff",
+        borderWidth: 1,
+        borderColor: "#ffff",
     },
 
-      botonesContainer: {
+    botonesContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-      },
+    },
+
+
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+    },
+
+    tareaHecho: {
+        backgroundColor: 'lightgreen',
+    }
+
 })

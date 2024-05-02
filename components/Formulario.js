@@ -1,7 +1,5 @@
-// Nuevo componente: FormularioTarea.js
-
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView, View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableHighlight } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 
@@ -11,35 +9,39 @@ export default function Formulario({ onAgregarTarea, onClose }) {
   const [telefono, setTelefono] = useState('');
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
-
-
+  const [fechaSeleccionada, setFechaSeleccionada] = useState('');
+  const [horaSeleccionada, setHoraSeleccionada] = useState('');
 
   const agregarTarea = () => {
-
-    if (!nombre || !descripcion) {
+    if (!nombre || !descripcion || !telefono || !fechaSeleccionada || !horaSeleccionada) {
       alert('Por favor completa todos los campos.');
       return;
     }
-
 
     const nuevaTarea = {
       id: Math.random().toString(),
       nombre: nombre,
       descripcion: descripcion,
       telefono: telefono,
-      fecha: fecha,
-      hora: hora
+      fecha: fechaSeleccionada,
+      hora: horaSeleccionada
     };
 
     onAgregarTarea(nuevaTarea);
-
     setNombre('');
     setDescripcion('');
     setTelefono('');
-
+    setFecha('');
+    setHora('');
   };
 
+
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const handleDateConfirm = (date) => {
+    setFechaSeleccionada(date.toLocaleDateString());
+    hideDatePicker();
+  };
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -49,92 +51,84 @@ export default function Formulario({ onAgregarTarea, onClose }) {
     setDatePickerVisibility(false);
   };
 
-  const handleConfirm = (date) => {
-    console.warn("A date has been picked: ", date);
-    hideDatePicker();
+
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+
+  const handleTimeConfirm = (time) => {
+    setHoraSeleccionada(time.toLocaleTimeString());
+    hideTimePicker();
   };
 
-  const handleConfirmHora = (time) => {
-    console.warn("A date has been picked: ", time);
-    hideDatePicker();
-
-  };
-  const showDatePickerHora = () => {
-    setDatePickerVisibility(true);
-  };
-  const hideDatePickerHora = () => {
-    setDatePickerVisibility(false);
+  const showTimePicker = () => {
+    setTimePickerVisibility(true);
   };
 
+  const hideTimePicker = () => {
+    setTimePickerVisibility(false);
+  };
 
 
   return (
     <>
-      <View style={styles.formulario}>
-        <Text style={styles.label}>Nombre:</Text>
-        <TextInput
-          style={styles.input}
-          value={nombre}
-          onChangeText={setNombre}
-        />
+      <ScrollView>
+        <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
+          <View style={styles.formulario}>
+            <Text style={styles.label}>Nombre:</Text>
+            <TextInput
+              style={styles.input}
+              value={nombre}
+              onChangeText={setNombre}
+            />
 
-        <Text style={styles.label}>Descripción:</Text>
-        <TextInput
-          multiline
-          style={styles.input}
-          value={descripcion}
-          onChangeText={setDescripcion}
-        />
+            <Text style={styles.label}>Descripción:</Text>
+            <TextInput
+              multiline
+              style={styles.input}
+              value={descripcion}
+              onChangeText={setDescripcion}
+            />
 
-        <Text style={styles.label}>Telefono:</Text>
-        <TextInput
-          style={styles.input}
-          value={telefono}
-          onChangeText={setTelefono}
-          keyboardType='numeric'
-        />
+            <Text style={styles.label}>Telefono:</Text>
+            <TextInput
+              style={styles.input}
+              value={telefono}
+              onChangeText={setTelefono}
+              keyboardType='numeric'
+            />
+            <View style={styles.label}>
+              <Button title="Selecciona Fecha Limite" onPress={showDatePicker} />
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleDateConfirm}
+                onCancel={hideDatePicker}
+                locale='es_ES'
+              />
+            </View>
 
-        <Text style={styles.label}>Fecha:</Text>
-        <TextInput
-          style={styles.input}
-          value={fecha}
-          onChangeText={setFecha}
-        />
-
-        <Text style={styles.label}>Hora:</Text>
-        <TextInput
-          style={styles.input}
-          value={hora}
-          onChangeText={setHora}
-        />
-        <Button style={styles.btnGuardar} title="Agregar Tarea" onPress={agregarTarea} />
-        <Button style={styles.btnCancelar} title="Cerrar" onPress={onClose} />
+            <View style={styles.label}>
+              <Button title="Selecciona Hora Limite" onPress={showTimePicker} />
+              <DateTimePickerModal
+                isVisible={isTimePickerVisible}
+                mode="time"
+                onConfirm={handleTimeConfirm}
+                onCancel={hideTimePicker}
+                locale='es_ES'
+              />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </ScrollView>
+      <View style={styles.botonesContainer}>
+        <TouchableHighlight onPress={agregarTarea} style={styles.btnGuardar}>
+          <Text style={styles.textoEliminar}>Agregar</Text>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.btnCancelar} title="Cerrar" onPress={onClose}>
+          <Text style={styles.textoEliminar}>Cancelar</Text>
+        </TouchableHighlight>
       </View>
-
-      <View>
-        <Button title="Show Date Picker" onPress={showDatePicker} />
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="date"
-          locale='es_ES'
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
-
-        />
-      </View>
-
-      <View>
-        <Button title="Show Time Picker" onPress={showDatePickerHora} />
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="time"
-          locale='es_ES'
-          onConfirm={handleConfirmHora}
-          onCancel={hideDatePickerHora}
-        />
-      </View>
-
     </>
+
   );
 }
 
@@ -157,22 +151,41 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
+  btnCancelar: {
+    alignItems: 'center',
+    backgroundColor: 'grey',
+    padding: 10,
+    width: "30%",
+    borderRadius: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "grey",
+    marginHorizontal: 5,
+  },
 
   btnGuardar: {
-    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#05a6ec',
     padding: 10,
-    backgroundColor: 'blue',
-    marginVertical: 10,
-    marginLeft: 5
-},
+    width: "30%",
+    borderRadius: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#2945e3",
+    marginHorizontal: 5,
+  },
 
-btnCancelar: {
-  flex: 1,
-  padding: 10,
-  backgroundColor: '#797871',
-  marginVertical: 10,
-  marginLeft: 5,
-},
+  botonesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    margin: 3,
+  },
+
+  textoEliminar: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
 });
 
 
